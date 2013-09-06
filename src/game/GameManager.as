@@ -272,14 +272,13 @@ package game
 
 			setDealerValueLabelText(gameStatus.dealer.getHandValue().toString());
 
-			if (!gameStatus.you.blackjack && !gameStatus.you.bust)
+			if (gameStatus.playerStopGame())
 			{
 				while (gameStatus.dealer.getHandValue() < DEALER_MAX_TO_HIT)
 				{
 					newDealerCard();
 				}
 			}
-
 			setDealerMessageLabelText(gameStatus.getDealerMessage());
 			setPlayerMessageLabelText(gameStatus.getPlayerMessage(true));
 			gameTable.nextButton.visible=true;
@@ -288,20 +287,16 @@ package game
 
 		private function clearTable():void
 		{
-			if (gameStatus.you.cardsVisual.length > 0)
+			for each (var playerCards:Card in gameStatus.you.cardsVisual)
 			{
-				for (var j:int=0; j < gameStatus.you.cardsVisual.length; j++)
-				{
-					removeCard(gameStatus.you.cardsVisual[j])
-				}
+				removeCard(playerCards);
 			}
-			if (gameStatus.dealer.cardsVisual.length > 0)
+			
+			for each (var dealerCards:Card in gameStatus.dealer.cardsVisual)
 			{
-				for (j=0; j < gameStatus.dealer.cardsVisual.length; j++)
-				{
-					removeCard(gameStatus.dealer.cardsVisual[j])
-				}
+				removeCard(dealerCards);
 			}
+
 			gameStatus.onInit();
 			setPlayerValueLabelText();
 			setDealerValueLabelText();

@@ -166,5 +166,10 @@ package game
 			}
 			return dealerMsg;
 		}
+		
+		public function playerStopGame():Boolean
+		{
+			return !you.blackjack && !you.bust;
+		}
 	}
 }
