@@ -19,11 +19,7 @@ package game
 
 		private var cardsArray:Array;
 
-		private var curentBet:int=0;
-		private var curentBalance:int=MAX_MONEY;
-
-		private var dealer:Player;
-		private var you:Player;
+		private var gameStatus:GameLogick;
 
 		public function GameManager(gs:Stage)
 		{
@@ -38,12 +34,12 @@ package game
 			deckOfCards=new DeckOfCardsMathManager();
 
 			cardsArray=deckOfCards.shufleCards();
+
+			gameStatus=new GameLogick(MAX_MONEY);
 		}
 
 		protected function onStartGameButtonClickHandler(event:MouseEvent):void
 		{
-			dealer=new Player;
-			you=new Player;
 			gameTable.startGameButton.removeEventListener(MouseEvent.CLICK, onStartGameButtonClickHandler);
 			gameTable.gotoAndStop("Game");
 			initGameInterface();
@@ -73,12 +69,9 @@ package game
 
 			clearTable();
 
-			dealer.reinit();
-			you.reinit();
+			gameStatus.onInit();
 
-			setBalanceLabelText(curentBalance.toString());
-
-			curentBet=0;
+			setBalanceLabelText(gameStatus.curentBalance.toString());
 
 			setPlayerMessageLabelText("Сделайте вашу ставку");
 			setDealerMessageLabelText("");
@@ -155,15 +148,15 @@ package game
 		protected function onBetButtonClickHandler(event:MouseEvent):void
 		{
 			trace("- [BTN] BET");
-			if (curentBet < MAX_BET)
+			if (gameStatus.curentBet < MAX_BET)
 			{
-				if (curentBalance >= BET)
+				if (gameStatus.curentBalance >= BET)
 				{
-					curentBalance-=BET;
-					curentBet+=BET;
+					gameStatus.curentBalance-=BET;
+					gameStatus.curentBet+=BET;
 
-					setBetLabelText(curentBet.toString());
-					setBalanceLabelText(curentBalance.toString());
+					setBetLabelText(gameStatus.curentBet.toString());
+					setBalanceLabelText(gameStatus.curentBalance.toString());
 
 					gameTable.dealButton.enabled=true;
 				}
@@ -175,7 +168,7 @@ package game
 				}
 			}
 
-			if (curentBalance == 0 || curentBet == MAX_BET)
+			if (gameStatus.curentBalance == 0 || gameStatus.curentBet == MAX_BET)
 			{
 				gameTable.betButton.enabled=false;
 			}
@@ -184,7 +177,7 @@ package game
 		protected function onNewGameButtonClickHandler(event:MouseEvent):void
 		{
 			trace("- [BTN] NEW GAME");
-			curentBalance=MAX_MONEY;
+			gameStatus.curentBalance=MAX_MONEY;
 			reShufle();
 			initGameInterface();
 		}
@@ -199,37 +192,30 @@ package game
 		{
 			var nextCard:Card=new Card;
 
-			you.cardY=400;
+			gameStatus.you.cardY=400;
 
-			nextCard.x=you.cardX;
-			nextCard.y=you.cardY;
+			nextCard.x=gameStatus.you.cardX;
+			nextCard.y=gameStatus.you.cardY;
 
 			var Count:int=cardsArray.pop();
 
-			you.add(Count);
+			gameStatus.you.addCard(Count);
 
-			setPlayerValueLabelText(you.getHandValue().toString());
+			setPlayerValueLabelText(gameStatus.you.getHandValue().toString());
 
 			nextCard.gotoAndStop(Count);
-			you.cardsVisual.push(nextCard);
-			you.cardsNumeric.push(Count);
+			gameStatus.you.cardsVisual.push(nextCard);
+			gameStatus.you.cardsNumeric.push(Count);
 
-			placeCard(you.cardsVisual[you.cardsVisual.length - 1]);
+			placeCard(gameStatus.you.cardsVisual[gameStatus.you.cardsVisual.length - 1]);
 
 			if (cardsArray.length == 0)
 			{
 				reShufle();
 			}
-
-			if (you.getHandValue() == 21 && you.cardsNumeric.length > 2)
+			setPlayerMessageLabelText(gameStatus.getPlayerMessage());
+			if (gameStatus.openDealerFlag)
 			{
-				setPlayerMessageLabelText("Хватит");
-				openDealer();
-			}
-			else if (you.getHandValue() > 21)
-			{
-				you.bust=true;
-				setPlayerMessageLabelText("Перебор");
 				openDealer();
 			}
 		}
@@ -238,14 +224,14 @@ package game
 		{
 			var nextCard:Card=new Card;
 
-			dealer.cardY=165;
+			gameStatus.dealer.cardY=165;
 
-			nextCard.x=dealer.cardX;
-			nextCard.y=dealer.cardY;
+			nextCard.x=gameStatus.dealer.cardX;
+			nextCard.y=gameStatus.dealer.cardY;
 
 			var Count:int=cardsArray.pop();
 
-			dealer.add(Count);
+			gameStatus.dealer.addCard(Count);
 
 			if (hideCard)
 			{
@@ -254,11 +240,11 @@ package game
 			else
 			{
 				nextCard.gotoAndStop(Count);
-				setDealerValueLabelText(dealer.getHandValue().toString());
+				setDealerValueLabelText(gameStatus.dealer.getHandValue().toString());
 			}
-			dealer.cardsVisual.push(nextCard);
-			dealer.cardsNumeric.push(Count);
-			placeCard(dealer.cardsVisual[dealer.cardsVisual.length - 1]);
+			gameStatus.dealer.cardsVisual.push(nextCard);
+			gameStatus.dealer.cardsNumeric.push(Count);
+			placeCard(gameStatus.dealer.cardsVisual[gameStatus.dealer.cardsVisual.length - 1]);
 
 			if (cardsArray.length == 0)
 			{
@@ -268,122 +254,55 @@ package game
 
 		private function openDealer():void
 		{
-			var x:int=dealer.cardsVisual[1].x;
-			var y:int=dealer.cardsVisual[1].y;
+			var x:int=gameStatus.dealer.cardsVisual[1].x;
+			var y:int=gameStatus.dealer.cardsVisual[1].y;
+
 			var openCard:Card=new Card;
 
 			gameTable.hitButton.enabled=false;
 			gameTable.standButton.enabled=false;
 
-			openCard.gotoAndStop(dealer.cardsNumeric[1]);
+			openCard.gotoAndStop(gameStatus.dealer.cardsNumeric[1]);
 			openCard.x=x;
 			openCard.y=y;
 
-			removeCard(dealer.cardsVisual[1]);
-			dealer.cardsVisual[1]=openCard;
-			placeCard(dealer.cardsVisual[1]);
+			removeCard(gameStatus.dealer.cardsVisual[1]);
+			gameStatus.dealer.cardsVisual[1]=openCard;
+			placeCard(gameStatus.dealer.cardsVisual[1]);
 
-			setDealerValueLabelText(dealer.getHandValue().toString());
+			setDealerValueLabelText(gameStatus.dealer.getHandValue().toString());
 
-			if (!you.blackjack && !you.bust)
+			if (!gameStatus.you.blackjack && !gameStatus.you.bust)
 			{
-				while (dealer.getHandValue() < DEALER_MAX_TO_HIT)
+				while (gameStatus.dealer.getHandValue() < DEALER_MAX_TO_HIT)
 				{
 					newDealerCard();
 				}
 			}
 
-			if (dealer.cardsNumeric.length == 2 && dealer.getHandValue() == 21)
-			{
-				dealer.blackjack=true;
-				setDealerMessageLabelText("Blackjack");
-			}
-			else if (dealer.getHandValue() > 21)
-			{
-				dealer.bust=true;
-				setDealerMessageLabelText("Перебор");
-			}
-
-			endOfGame();
-		}
-
-		private function endOfGame():void
-		{
-			trace("=============================");
-			trace("p BJ: " + you.blackjack);
-			trace("p Bust: " + you.bust);
-			trace("p Hand: " + you.getHandValue());
-			trace("=============================");
-			trace("d BJ: " + dealer.blackjack);
-			trace("d Bust: " + dealer.bust);
-			trace("d Hand: " + dealer.getHandValue());
-			trace("=============================");
-
-			if (you.blackjack && dealer.blackjack)
-			{
-				curentBalance+=curentBet;
-				setPlayerMessageLabelText(" Blackjack ничья [ + 0 ");
-			}
-			else if (you.blackjack && !dealer.blackjack)
-			{
-				curentBalance+=curentBet * 2.5;
-				setPlayerMessageLabelText(" Blackjack  [ + " + (curentBet * 1.5) + " ");
-			}
-			else if (!you.bust)
-			{
-				if (dealer.bust)
-				{
-					curentBalance+=curentBet * 2;
-					setPlayerMessageLabelText(" Выиграли! [ + " + curentBet + " ");
-				}
-				else if (you.getHandValue() == dealer.getHandValue())
-				{
-					curentBalance+=curentBet;
-					setPlayerMessageLabelText(" Ничья [ + 0 ");
-				}
-				else if (you.getHandValue() > dealer.getHandValue())
-				{
-					curentBalance+=curentBet * 2;
-					setPlayerMessageLabelText(" Выиграли! [ + " + curentBet + " ");
-				}
-				else
-				{
-					setPlayerMessageLabelText(" Проиграли [ - " + curentBet + " ");
-				}
-			}
-			else
-			{
-				setPlayerMessageLabelText(" Перебор [ - " + curentBet + " ");
-			}
-
+			setDealerMessageLabelText(gameStatus.getDealerMessage());
+			setPlayerMessageLabelText(gameStatus.getPlayerMessage(true));
 			gameTable.nextButton.visible=true;
 			gameTable.newGameButton.visible=true;
-
 		}
 
 		private function clearTable():void
 		{
-			if (you.cardsVisual.length > 0)
+			if (gameStatus.you.cardsVisual.length > 0)
 			{
-				for (var j:int=0; j < you.cardsVisual.length; j++)
+				for (var j:int=0; j < gameStatus.you.cardsVisual.length; j++)
 				{
-					removeCard(you.cardsVisual[j])
+					removeCard(gameStatus.you.cardsVisual[j])
 				}
 			}
-			if (dealer.cardsVisual.length > 0)
+			if (gameStatus.dealer.cardsVisual.length > 0)
 			{
-				for (j=0; j < dealer.cardsVisual.length; j++)
+				for (j=0; j < gameStatus.dealer.cardsVisual.length; j++)
 				{
-					removeCard(dealer.cardsVisual[j])
+					removeCard(gameStatus.dealer.cardsVisual[j])
 				}
 			}
-			reInitAll();
-		}
-
-		private function reInitAll():void
-		{
-			you.reinit();
-			dealer.reinit();
+			gameStatus.onInit();
 			setPlayerValueLabelText();
 			setDealerValueLabelText();
 		}
@@ -405,9 +324,8 @@ package game
 			newDealerCard();
 			newDealerCard(true);
 
-			if (you.cardsNumeric.length == 2 && you.getHandValue() == 21)
+			if (gameStatus.checkPlayerBlackjack())
 			{
-				you.blackjack=true;
 				gameTable.hitButton.enabled=false;
 				gameTable.standButton.enabled=false;
 				openDealer();

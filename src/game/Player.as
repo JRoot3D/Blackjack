@@ -17,11 +17,11 @@ package game
 
 		public function Player()
 		{
-			reinit();
+			onInit();
 			deckOfCards=new DeckOfCardsMathManager;
 		}
 
-		public function reinit():void
+		public function onInit():void
 		{
 			playerHandValue=0;
 			playerHandValueAce=0;
@@ -38,7 +38,7 @@ package game
 			return playerHandValueAce <= 21 ? playerHandValueAce : playerHandValue;
 		}
 
-		public function add(count:int):void
+		public function addCard(count:int):void
 		{
 			playerHandValue+=deckOfCards.getCardPrice(count);
 			playerHandValueAce+=deckOfCards.getCardPrice(count);
@@ -90,15 +90,15 @@ package game
 
 		public function get cardX():int
 		{
-			return playerCardX += 75;
+			return playerCardX+=75;
 		}
 
 		public function get cardY():int
 		{
 			playerCardUp=!playerCardUp;
-			if(playerCardUp)
+			if (playerCardUp)
 			{
-				return playerCardY+10;
+				return playerCardY + 10;
 			}
 			else
 			{
