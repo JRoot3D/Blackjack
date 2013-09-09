@@ -3,112 +3,105 @@ package game
 
 	public class Player
 	{
-		private var playerHandValue:int;
-		private var playerHandValueAce:int;
-		private var playerBlackjack:Boolean;
-		private var playerBust:Boolean;
-		private var playerCardsNumeric:Array;
-		private var playerCardsVisual:Array;
-		private var playerCardX:int;
-		private var playerCardY:int;
-		private var playerCardUp:Boolean;
+		private var handValue:int;
+		private var handValueAce:int;
+		private var isBlackjack:Boolean;
+		private var isBust:Boolean;
+		private var cards:Array;
+		private var cardsFaces:Array;
+		private var cardPosX:int;
+		private var cardPosY:int;
+		private var isCardUp:Boolean;
 
 		private var deckOfCards:DeckOfCardsMathManager;
 
-		public function Player()
+		public function Player(deck:DeckOfCardsMathManager)
 		{
 			onInit();
-			deckOfCards=new DeckOfCardsMathManager;
+			deckOfCards=deck;
 		}
 
 		public function onInit():void
 		{
-			playerHandValue=0;
-			playerHandValueAce=0;
-			playerBlackjack=false;
-			playerBust=false;
-			playerCardsNumeric=[];
-			playerCardsVisual=[];
-			playerCardX=100;
-			playerCardUp=true;
+			handValue=0;
+			handValueAce=0;
+			isBlackjack=false;
+			isBust=false;
+			cards=[];
+			cardsFaces=[];
+			cardPosX=100;
+			isCardUp=true;
 		}
 
 		public function getHandValue():int
 		{
-			return playerHandValueAce <= 21 ? playerHandValueAce : playerHandValue;
+			return handValueAce <= 21 ? handValueAce : handValue;
 		}
 
 		public function addCard(count:int):void
 		{
-			playerHandValue+=deckOfCards.getCardPrice(count);
-			playerHandValueAce+=deckOfCards.getCardPrice(count);
+			handValue+=deckOfCards.getCardPrice(count);
+			handValueAce+=deckOfCards.getCardPrice(count);
 			if (count >= 1 && count <= 4)
 			{
-				playerHandValueAce+=10;
+				handValueAce+=10;
 			}
 		}
 
 		public function get blackjack():Boolean
 		{
-			return playerBlackjack;
+			return isBlackjack;
 		}
 
 		public function set blackjack(value:Boolean):void
 		{
-			playerBlackjack=value;
+			isBlackjack=value;
 		}
 
 		public function get bust():Boolean
 		{
-			return playerBust;
+			return isBust;
 		}
 
 		public function set bust(value:Boolean):void
 		{
-			playerBust=value;
+			isBust=value;
 		}
 
 		public function get cardsNumeric():Array
 		{
-			return playerCardsNumeric;
+			return cards;
 		}
 
 		public function set cardsNumeric(value:Array):void
 		{
-			playerCardsNumeric=value;
+			cards=value;
 		}
 
 		public function get cardsVisual():Array
 		{
-			return playerCardsVisual;
+			return cardsFaces;
 		}
 
 		public function set cardsVisual(value:Array):void
 		{
-			playerCardsVisual=value;
+			cardsFaces=value;
 		}
 
 		public function get cardX():int
 		{
-			return playerCardX+=75;
+			return cardPosX+=75;
 		}
 
 		public function get cardY():int
 		{
-			playerCardUp=!playerCardUp;
-			if (playerCardUp)
-			{
-				return playerCardY + 10;
-			}
-			else
-			{
-				return playerCardY
-			}
+			isCardUp=!isCardUp;
+			return isCardUp ? cardPosY + 10 : cardPosY;
 		}
 
 		public function set cardY(value:int):void
 		{
-			playerCardY=value;
+			cardPosY=value;
 		}
 	}
 }

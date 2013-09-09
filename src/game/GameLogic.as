@@ -1,8 +1,7 @@
 package game
 {
-	import flashx.textLayout.factory.TruncationOptions;
 
-	public class GameLogick
+	public class GameLogic
 	{
 		private var youPlayer:Player;
 		private var dealerPlayer:Player;
@@ -12,19 +11,28 @@ package game
 		private var playerMsg:String;
 		private var dealerMsg:String;
 
-		public function GameLogick(money:int)
+		private var deckOfCards:DeckOfCardsMathManager;
+
+		private var cardsArray:Array;
+
+		public function GameLogic(money:int)
 		{
 			balance=money;
-			you=new Player();
-			dealer=new Player();
+
+			deckOfCards=new DeckOfCardsMathManager();
+			cardsArray=deckOfCards.shufleCards();
+
+			youPlayer=new Player(deckOfCards);
+			dealerPlayer=new Player(deckOfCards);
+
 		}
 
 		public function onInit():void
 		{
-			you.onInit();
-			dealer.onInit();
+			youPlayer.onInit();
+			dealerPlayer.onInit();
 			openDealer=false;
-			curentBet=0;
+			bet=0;
 			playerMsg="";
 			dealerMsg="";
 		}
@@ -166,10 +174,29 @@ package game
 			}
 			return dealerMsg;
 		}
-		
+
 		public function playerStopGame():Boolean
 		{
 			return !you.blackjack && !you.bust;
+		}
+
+		public function nextCard():int
+		{
+			var cardId:int;
+			cardId=cardsArray.pop();
+
+			if (cardsArray.length == 0)
+			{
+				reShufle();
+			}
+
+			return cardId;
+		}
+
+		public function reShufle():void
+		{
+			cardsArray=[];
+			cardsArray=deckOfCards.shufleCards();
 		}
 	}
 }

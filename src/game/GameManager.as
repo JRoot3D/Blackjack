@@ -15,11 +15,7 @@ package game
 
 		private var gameStage:Stage;
 
-		private var deckOfCards:DeckOfCardsMathManager;
-
-		private var cardsArray:Array;
-
-		private var gameStatus:GameLogick;
+		private var gameStatus:GameLogic;
 
 		public function GameManager(gs:Stage)
 		{
@@ -31,29 +27,24 @@ package game
 			gameTable.startGameButton.addEventListener(MouseEvent.CLICK, onStartGameButtonClickHandler);
 			gameStage.addChild(gameTable);
 
-			deckOfCards=new DeckOfCardsMathManager();
-
-			cardsArray=deckOfCards.shufleCards();
-
-			gameStatus=new GameLogick(MAX_MONEY);
+			gameStatus=new GameLogic(MAX_MONEY);
 		}
 
 		protected function onStartGameButtonClickHandler(event:MouseEvent):void
 		{
 			gameTable.startGameButton.removeEventListener(MouseEvent.CLICK, onStartGameButtonClickHandler);
 			gameTable.gotoAndStop("Game");
-			initGameInterface();
-		}
-
-		private function initGameInterface():void
-		{
 			gameTable.betButton.addEventListener(MouseEvent.CLICK, onBetButtonClickHandler);
 			gameTable.dealButton.addEventListener(MouseEvent.CLICK, onDealButtonClickHandler);
 			gameTable.hitButton.addEventListener(MouseEvent.CLICK, onHitlButtonClickHandler);
 			gameTable.standButton.addEventListener(MouseEvent.CLICK, onStandlButtonClickHandler);
 			gameTable.newGameButton.addEventListener(MouseEvent.CLICK, onNewGameButtonClickHandler);
 			gameTable.nextButton.addEventListener(MouseEvent.CLICK, onNextButtonClickHandler);
+			initGameInterface();
+		}
 
+		private function initGameInterface():void
+		{
 			setBetLabelText();
 			setBalanceLabelText();
 			setPlayerValueLabelText();
@@ -178,7 +169,7 @@ package game
 		{
 			trace("- [BTN] NEW GAME");
 			gameStatus.curentBalance=MAX_MONEY;
-			reShufle();
+			gameStatus.reShufle();
 			initGameInterface();
 		}
 
@@ -197,7 +188,7 @@ package game
 			nextCard.x=gameStatus.you.cardX;
 			nextCard.y=gameStatus.you.cardY;
 
-			var Count:int=cardsArray.pop();
+			var Count:int=gameStatus.nextCard();
 
 			gameStatus.you.addCard(Count);
 
@@ -209,11 +200,8 @@ package game
 
 			placeCard(gameStatus.you.cardsVisual[gameStatus.you.cardsVisual.length - 1]);
 
-			if (cardsArray.length == 0)
-			{
-				reShufle();
-			}
 			setPlayerMessageLabelText(gameStatus.getPlayerMessage());
+
 			if (gameStatus.openDealerFlag)
 			{
 				openDealer();
@@ -229,7 +217,7 @@ package game
 			nextCard.x=gameStatus.dealer.cardX;
 			nextCard.y=gameStatus.dealer.cardY;
 
-			var Count:int=cardsArray.pop();
+			var Count:int=gameStatus.nextCard();
 
 			gameStatus.dealer.addCard(Count);
 
@@ -245,11 +233,6 @@ package game
 			gameStatus.dealer.cardsVisual.push(nextCard);
 			gameStatus.dealer.cardsNumeric.push(Count);
 			placeCard(gameStatus.dealer.cardsVisual[gameStatus.dealer.cardsVisual.length - 1]);
-
-			if (cardsArray.length == 0)
-			{
-				reShufle();
-			}
 		}
 
 		private function openDealer():void
@@ -291,7 +274,7 @@ package game
 			{
 				removeCard(playerCards);
 			}
-			
+
 			for each (var dealerCards:Card in gameStatus.dealer.cardsVisual)
 			{
 				removeCard(dealerCards);
@@ -300,12 +283,6 @@ package game
 			gameStatus.onInit();
 			setPlayerValueLabelText();
 			setDealerValueLabelText();
-		}
-
-		private function reShufle():void
-		{
-			cardsArray=[];
-			cardsArray=deckOfCards.shufleCards();
 		}
 
 		private function startPlayer():void
