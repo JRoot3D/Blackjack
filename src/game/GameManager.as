@@ -5,9 +5,10 @@ package game
 
 	public class GameManager
 	{
+		private const CARD_BACK:int=53;
+		
 		private const MAX_BET:int=200;
 		private const BET:int=20;
-		private const CARD_BACK:int=53;
 		private const DEALER_MAX_TO_HIT:int=17;
 		private const MAX_MONEY:int=2000;
 
@@ -17,9 +18,9 @@ package game
 
 		private var gameStatus:GameLogic;
 
-		public function GameManager(gs:Stage)
+		public function GameManager(gStage:Stage)
 		{
-			gameStage=gs;
+			gameStage=gStage;
 			gameTable=new Background();
 			gameTable.x=gameStage.stageWidth / 2;
 			gameTable.y=gameStage.stageHeight / 2;
