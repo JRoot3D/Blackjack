@@ -63,7 +63,7 @@ package game
 
 			gameStatus.onInit();
 
-			setBalanceLabelText(gameStatus.curentBalance.toString());
+			setBalanceLabelText(gameStatus.currentBalance.toString());
 
 			setPlayerMessageLabelText("Сделайте вашу ставку");
 			setDealerMessageLabelText("");
@@ -140,15 +140,15 @@ package game
 		protected function onBetButtonClickHandler(event:MouseEvent):void
 		{
 			trace("- [BTN] BET");
-			if (gameStatus.curentBet < MAX_BET)
+			if (gameStatus.currentBet < MAX_BET)
 			{
-				if (gameStatus.curentBalance >= BET)
+				if (gameStatus.currentBalance >= BET)
 				{
-					gameStatus.curentBalance-=BET;
-					gameStatus.curentBet+=BET;
+					gameStatus.currentBalance-=BET;
+					gameStatus.currentBet+=BET;
 
-					setBetLabelText(gameStatus.curentBet.toString());
-					setBalanceLabelText(gameStatus.curentBalance.toString());
+					setBetLabelText(gameStatus.currentBet.toString());
+					setBalanceLabelText(gameStatus.currentBalance.toString());
 
 					gameTable.dealButton.enabled=true;
 				}
@@ -160,7 +160,7 @@ package game
 				}
 			}
 
-			if (gameStatus.curentBalance == 0 || gameStatus.curentBet == MAX_BET)
+			if (gameStatus.currentBalance == 0 || gameStatus.currentBet == MAX_BET)
 			{
 				gameTable.betButton.enabled=false;
 			}
@@ -169,7 +169,7 @@ package game
 		protected function onNewGameButtonClickHandler(event:MouseEvent):void
 		{
 			trace("- [BTN] NEW GAME");
-			gameStatus.curentBalance=MAX_MONEY;
+			gameStatus.currentBalance=MAX_MONEY;
 			gameStatus.reShufle();
 			initGameInterface();
 		}

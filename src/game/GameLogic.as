@@ -14,6 +14,8 @@ package game
 		private var deckOfCards:DeckOfCardsMathManager;
 
 		private var cardsArray:Array;
+		
+		private var facebookManager:FacebookManager;
 
 		public function GameLogic(money:int)
 		{
@@ -24,7 +26,8 @@ package game
 
 			youPlayer=new Player(deckOfCards);
 			dealerPlayer=new Player(deckOfCards);
-
+			
+			facebookManager = new FacebookManager();
 		}
 
 		public function onInit():void
@@ -50,6 +53,7 @@ package game
 				{
 					balance+=bet * 2.5;
 					playerMsg=" Blackjack  [ + " + (bet * 1.5) + " ";
+					facebookManager.postToWallBlackjack();
 				}
 				else if (!you.bust)
 				{
@@ -140,22 +144,22 @@ package game
 			openDealer=value;
 		}
 
-		public function get curentBalance():int
+		public function get currentBalance():int
 		{
 			return balance;
 		}
 
-		public function set curentBalance(value:int):void
+		public function set currentBalance(value:int):void
 		{
 			balance=value;
 		}
 
-		public function get curentBet():int
+		public function get currentBet():int
 		{
 			return bet;
 		}
 
-		public function set curentBet(value:int):void
+		public function set currentBet(value:int):void
 		{
 			bet=value;
 		}
