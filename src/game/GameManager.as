@@ -1,34 +1,62 @@
 package game
 {
+	import flash.display.Loader;
+	import flash.display.MovieClip;
 	import flash.display.Stage;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.net.URLRequest;
+	import flash.system.ApplicationDomain;
 
 	public class GameManager
 	{
-		private const CARD_BACK:int=53;
-		
-		private const MAX_BET:int=200;
-		private const BET:int=20;
-		private const DEALER_MAX_TO_HIT:int=17;
-		private const MAX_MONEY:int=2000;
-
-		private var gameTable:Background;
+		private static const CARD_BACK:int=53;
+		private static const MAX_BET:int=200;
+		private static const BET:int=20;
+		private static const DEALER_MAX_TO_HIT:int=17;
+		private static const MAX_MONEY:int=2000;
 
 		private var gameStage:Stage;
+		private var loader:Loader;
+		private var appDomain:ApplicationDomain;
+
+		private var Card:Class;
 
 		private var gameStatus:GameLogic;
+
+		private var gameTable:MovieClip;
 
 		public function GameManager(gStage:Stage)
 		{
 			gameStage=gStage;
-			gameTable=new Background();
-			gameTable.x=gameStage.stageWidth / 2;
-			gameTable.y=gameStage.stageHeight / 2;
-			gameTable.gotoAndStop("Main");
-			gameTable.startGameButton.addEventListener(MouseEvent.CLICK, onStartGameButtonClickHandler);
-			gameStage.addChild(gameTable);
+
+			loader=new Loader();
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, completeHandler);
+			loader.load(new URLRequest("assets/GameRes.swf"));
 
 			gameStatus=new GameLogic(MAX_MONEY);
+		}
+
+		private function completeHandler(event:Event):void
+		{
+			appDomain=loader.contentLoaderInfo.applicationDomain;
+
+			if (appDomain.hasDefinition("Background"))
+			{
+				var Background:Class=appDomain.getDefinition("Background") as Class;
+				gameTable=new Background();
+
+				gameTable.x=gameStage.stageWidth / 2;
+				gameTable.y=gameStage.stageHeight / 2;
+				gameTable.gotoAndStop("Main");
+				gameTable.startGameButton.addEventListener(MouseEvent.CLICK, onStartGameButtonClickHandler);
+				gameStage.addChild(gameTable);
+			}
+
+			if (appDomain.hasDefinition("Card"))
+			{
+				Card=appDomain.getDefinition("Card") as Class;
+			}
 		}
 
 		protected function onStartGameButtonClickHandler(event:MouseEvent):void
@@ -99,12 +127,12 @@ package game
 			gameTable.dealerMessageLabel.text="[" + s + "]";
 		}
 
-		private function placeCard(card:Card):void
+		private function placeCard(card:MovieClip):void
 		{
 			gameStage.addChild(card);
 		}
 
-		private function removeCard(card:Card):void
+		private function removeCard(card:MovieClip):void
 		{
 			gameStage.removeChild(card);
 		}
@@ -182,7 +210,7 @@ package game
 
 		private function newPlayerCard():void
 		{
-			var nextCard:Card=new Card;
+			var nextCard:MovieClip=new Card();
 
 			gameStatus.you.cardY=400;
 
@@ -211,7 +239,7 @@ package game
 
 		private function newDealerCard(hideCard:Boolean=false):void
 		{
-			var nextCard:Card=new Card;
+			var nextCard:MovieClip=new Card();
 
 			gameStatus.dealer.cardY=165;
 
@@ -241,7 +269,7 @@ package game
 			var x:int=gameStatus.dealer.cardsVisual[1].x;
 			var y:int=gameStatus.dealer.cardsVisual[1].y;
 
-			var openCard:Card=new Card;
+			var openCard:MovieClip=new Card();
 
 			gameTable.hitButton.enabled=false;
 			gameTable.standButton.enabled=false;
@@ -271,12 +299,12 @@ package game
 
 		private function clearTable():void
 		{
-			for each (var playerCards:Card in gameStatus.you.cardsVisual)
+			for each (var playerCards:MovieClip in gameStatus.you.cardsVisual)
 			{
 				removeCard(playerCards);
 			}
 
-			for each (var dealerCards:Card in gameStatus.dealer.cardsVisual)
+			for each (var dealerCards:MovieClip in gameStatus.dealer.cardsVisual)
 			{
 				removeCard(dealerCards);
 			}

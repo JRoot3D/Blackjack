@@ -3,9 +3,9 @@ package game
 
 	public class DeckOfCardsMathManager
 	{
-		private const DECK_SIZE:int=52;
-		private const SUITS_COUNT:int=4;
-		private const PRICE_JACK_QUEEN_KING:int=10;
+		private static const DECK_SIZE:int=52;
+		private static const SUITS_COUNT:int=4;
+		private static const PRICE_JACK_QUEEN_KING:int=10;
 		private var baseCards:Array=[];
 		private var priceCards:Array=[];
 
