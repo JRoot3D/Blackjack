@@ -14,9 +14,8 @@ package game
 		private var deckOfCards:DeckOfCardsMathManager;
 
 		private var cardsArray:Array;
+		private var showDialog:Boolean;
 		
-		private var facebookManager:FacebookManager;
-
 		public function GameLogic(money:int)
 		{
 			balance=money;
@@ -26,14 +25,13 @@ package game
 
 			youPlayer=new Player(deckOfCards);
 			dealerPlayer=new Player(deckOfCards);
-			
-			facebookManager = new FacebookManager();
 		}
 
 		public function onInit():void
 		{
 			youPlayer.onInit();
 			dealerPlayer.onInit();
+			showDialog=false;
 			openDealer=false;
 			bet=0;
 			playerMsg="";
@@ -53,7 +51,7 @@ package game
 				{
 					balance+=bet * 2.5;
 					playerMsg=" Blackjack  [ + " + (bet * 1.5) + " ";
-					facebookManager.postToWallBlackjack();
+					showDialog=true;
 				}
 				else if (!you.bust)
 				{
@@ -201,6 +199,11 @@ package game
 		{
 			cardsArray=[];
 			cardsArray=deckOfCards.shufleCards();
+		}
+
+		public function get showBlackjackDialog():Boolean
+		{
+			return showDialog;
 		}
 	}
 }

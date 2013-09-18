@@ -21,10 +21,12 @@ package game
 		private var appDomain:ApplicationDomain;
 
 		private var Card:Class;
-
+		private var BlackjackDialog:Class;
+		
 		private var gameStatus:GameLogic;
 
 		private var gameTable:MovieClip;
+		private var blackjackDialog:MovieClip;
 
 		public function GameManager(gStage:Stage)
 		{
@@ -56,6 +58,11 @@ package game
 			if (appDomain.hasDefinition("Card"))
 			{
 				Card=appDomain.getDefinition("Card") as Class;
+			}
+			
+			if (appDomain.hasDefinition("BlackjackDialog"))
+			{
+				BlackjackDialog=appDomain.getDefinition("BlackjackDialog") as Class;
 			}
 		}
 
@@ -293,6 +300,32 @@ package game
 			}
 			setDealerMessageLabelText(gameStatus.getDealerMessage());
 			setPlayerMessageLabelText(gameStatus.getPlayerMessage(true));
+			
+			if(gameStatus.showBlackjackDialog)
+			{
+				blackjackDialog = new BlackjackDialog();
+				blackjackDialog.okButton.addEventListener(MouseEvent.CLICK, okButtonClickHandler);
+				blackjackDialog.x=gameStage.stageWidth / 2;
+				blackjackDialog.y=gameStage.stageHeight / 2;
+				gameStage.addChild(blackjackDialog);
+			}
+			else
+			{
+				gameTable.nextButton.visible=true;
+				gameTable.newGameButton.visible=true;	
+			}			
+		}
+		
+		protected function okButtonClickHandler(event:MouseEvent):void
+		{
+			trace("- [BTN] OK");			
+			if(blackjackDialog.postToWallCheckBox.selected)
+			{
+				var facebookManager:FacebookManager = new FacebookManager;
+				facebookManager.postToWallBlackjack();				
+			}				
+			blackjackDialog.okButton.removeEventListener(MouseEvent.CLICK, okButtonClickHandler);
+			gameStage.removeChild(blackjackDialog);
 			gameTable.nextButton.visible=true;
 			gameTable.newGameButton.visible=true;
 		}

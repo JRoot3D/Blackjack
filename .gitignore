@@ -15,6 +15,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
+.actionScriptProperties
 
 # External tool builders
 .externalToolBuilders/
