@@ -15,7 +15,19 @@ package game
 		private static const BET:int=20;
 		private static const DEALER_MAX_TO_HIT:int=17;
 		private static const MAX_MONEY:int=2000;
-
+		
+		private static const BACKGROUND:String="Background";
+		private static const CARD:String="Card";
+		private static const BLACKJACK_DIALOG:String="BlackjackDialog";
+		
+		private static const GAME:String="Game";
+		private static const MAIN:String="Main";
+		
+		private static const PLACE_A_BET:String="Сделайте вашу ставку";
+		private static const YOUR_ACTION:String="Ваши действия";
+		private static const MONEY_GONE:String="Деньги закончились";
+		
+		
 		private var gameStage:Stage;
 		private var loader:Loader;
 		private var appDomain:ApplicationDomain;
@@ -43,33 +55,33 @@ package game
 		{
 			appDomain=loader.contentLoaderInfo.applicationDomain;
 
-			if (appDomain.hasDefinition("Background"))
+			if (appDomain.hasDefinition(BACKGROUND))
 			{
-				var Background:Class=appDomain.getDefinition("Background") as Class;
+				var Background:Class=appDomain.getDefinition(BACKGROUND) as Class;
 				gameTable=new Background();
 
 				gameTable.x=gameStage.stageWidth / 2;
 				gameTable.y=gameStage.stageHeight / 2;
-				gameTable.gotoAndStop("Main");
+				gameTable.gotoAndStop(MAIN);
 				gameTable.startGameButton.addEventListener(MouseEvent.CLICK, onStartGameButtonClickHandler);
 				gameStage.addChild(gameTable);
 			}
 
-			if (appDomain.hasDefinition("Card"))
+			if (appDomain.hasDefinition(CARD))
 			{
-				Card=appDomain.getDefinition("Card") as Class;
+				Card=appDomain.getDefinition(CARD) as Class;
 			}
 			
-			if (appDomain.hasDefinition("BlackjackDialog"))
+			if (appDomain.hasDefinition(BLACKJACK_DIALOG))
 			{
-				BlackjackDialog=appDomain.getDefinition("BlackjackDialog") as Class;
+				BlackjackDialog=appDomain.getDefinition(BLACKJACK_DIALOG) as Class;
 			}
 		}
 
 		protected function onStartGameButtonClickHandler(event:MouseEvent):void
 		{
 			gameTable.startGameButton.removeEventListener(MouseEvent.CLICK, onStartGameButtonClickHandler);
-			gameTable.gotoAndStop("Game");
+			gameTable.gotoAndStop(GAME);
 			gameTable.betButton.addEventListener(MouseEvent.CLICK, onBetButtonClickHandler);
 			gameTable.dealButton.addEventListener(MouseEvent.CLICK, onDealButtonClickHandler);
 			gameTable.hitButton.addEventListener(MouseEvent.CLICK, onHitlButtonClickHandler);
@@ -100,7 +112,7 @@ package game
 
 			setBalanceLabelText(gameStatus.currentBalance.toString());
 
-			setPlayerMessageLabelText("Сделайте вашу ставку");
+			setPlayerMessageLabelText(PLACE_A_BET);
 			setDealerMessageLabelText("");
 		}
 
@@ -146,7 +158,6 @@ package game
 
 		protected function onStandlButtonClickHandler(event:MouseEvent):void
 		{
-			trace("- [BTN] STAND");
 			openDealer();
 			gameTable.hitButton.enabled=false;
 			gameTable.standButton.enabled=false;
@@ -154,14 +165,12 @@ package game
 
 		protected function onHitlButtonClickHandler(event:MouseEvent):void
 		{
-			trace("- [BTN] HIT");
 			newPlayerCard();
 		}
 
 		protected function onDealButtonClickHandler(event:MouseEvent):void
 		{
-			trace("- [BTN] DEAL");
-			setPlayerMessageLabelText("Ваши действия");
+			setPlayerMessageLabelText(YOUR_ACTION);
 			gameTable.betButton.enabled=false;
 			gameTable.dealButton.enabled=false;
 
@@ -174,7 +183,6 @@ package game
 
 		protected function onBetButtonClickHandler(event:MouseEvent):void
 		{
-			trace("- [BTN] BET");
 			if (gameStatus.currentBet < MAX_BET)
 			{
 				if (gameStatus.currentBalance >= BET)
@@ -189,7 +197,7 @@ package game
 				}
 				else
 				{
-					setPlayerMessageLabelText("Деньги закончились");
+					setPlayerMessageLabelText(MONEY_GONE);
 					gameTable.betButton.enabled=false;
 					gameTable.newGameButton.visible=true;
 				}
@@ -203,7 +211,6 @@ package game
 
 		protected function onNewGameButtonClickHandler(event:MouseEvent):void
 		{
-			trace("- [BTN] NEW GAME");
 			gameStatus.currentBalance=MAX_MONEY;
 			gameStatus.reShufle();
 			initGameInterface();
@@ -211,7 +218,6 @@ package game
 
 		protected function onNextButtonClickHandler(event:MouseEvent):void
 		{
-			trace("- [BTN] NEXT");
 			initGameInterface();
 		}
 
@@ -317,8 +323,7 @@ package game
 		}
 		
 		protected function okButtonClickHandler(event:MouseEvent):void
-		{
-			trace("- [BTN] OK");			
+		{			
 			if(blackjackDialog.postToWallCheckBox.selected)
 			{
 				var facebookManager:FacebookManager = new FacebookManager;
