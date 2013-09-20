@@ -327,7 +327,7 @@ package game
 			if(blackjackDialog.postToWallCheckBox.selected)
 			{
 				var facebookManager:FacebookManager = new FacebookManager;
-				facebookManager.postToWallBlackjack();				
+				facebookManager.postToWall("http://jroottestapp.hol.es/facebook/blackjack.jpg","Блекджек","Выиграл в Блекджек!!!");				
 			}				
 			blackjackDialog.okButton.removeEventListener(MouseEvent.CLICK, okButtonClickHandler);
 			gameStage.removeChild(blackjackDialog);

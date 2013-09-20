@@ -19,16 +19,16 @@ window.fbAsyncInit = function()
 	console.log('FB init: Done'); 
 }(document, /*debug*/ false));
 			
-function postToWallBlackjack() {  
+function postToWall(aPicture, aCaption, aDescription) {  
     FB.login(function(response) {
         if (response.authResponse) {
         FB.ui({
             method: 'feed', 
             name: 'Test App Blackjack Dialog',
             link: 'https://apps.facebook.com/439035149550637/',
-            picture: 'http://jroottestapp.hol.es/facebook/blackjack.jpg',
-            caption: 'Блекджек',
-            description: 'Выиграл в Блекджек!!!'
+			picture: aPicture,
+			caption: aCaption,
+			description: aDescription
         });
       } else {
         alert('User cancelled login or did not fully authorize.');
