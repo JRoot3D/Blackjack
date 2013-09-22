@@ -1,18 +1,7 @@
-#################
-## Eclipse
-#################
-
-*.pydevproject
-.metadata
+# Build and Release Folders
 bin/
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-.classpath
-.settings/
-.loadpath
 bin-debug/
 bin-release/
+
+# Other files and folders
+.settings/
