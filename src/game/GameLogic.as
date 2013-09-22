@@ -3,6 +3,8 @@ package game
 
 	public class GameLogic
 	{
+		private static const BLACKJACK:int = 21;
+		
 		private var youPlayer:Player;
 		private var dealerPlayer:Player;
 		private var openDealer:Boolean;
@@ -82,11 +84,11 @@ package game
 			}
 			else
 			{
-				if (you.getHandValue() == 21 && you.cardsNumeric.length > 2)
+				if (you.getHandValue() == BLACKJACK && you.cardsNumeric.length > 2)
 				{
 					openDealer=true;
 				}
-				else if (you.getHandValue() > 21)
+				else if (you.getHandValue() > BLACKJACK)
 				{
 					you.bust=true;
 					openDealer=true;
@@ -120,7 +122,7 @@ package game
 
 		public function checkPlayerBlackjack():Boolean
 		{
-			if (you.cardsNumeric.length == 2 && you.getHandValue() == 21)
+			if (you.cardsNumeric.length == 2 && you.getHandValue() == BLACKJACK)
 			{
 				you.blackjack=true;
 			}
@@ -164,12 +166,12 @@ package game
 
 		public function getDealerMessage():String
 		{
-			if (dealer.cardsNumeric.length == 2 && dealer.getHandValue() == 21)
+			if (dealer.cardsNumeric.length == 2 && dealer.getHandValue() == BLACKJACK)
 			{
 				dealer.blackjack=true;
 				dealerMsg="Blackjack";
 			}
-			else if (dealer.getHandValue() > 21)
+			else if (dealer.getHandValue() > BLACKJACK)
 			{
 				dealer.bust=true;
 				dealerMsg="Перебор";
